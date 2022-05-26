@@ -1,5 +1,5 @@
 project: rnshah9/exfat
-target: exfat
+target: dumpexfat
 
 cmds:
   - cmd: /repo/dump/dumpexfat @@
