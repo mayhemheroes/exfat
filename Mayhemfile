@@ -2,4 +2,4 @@ project: exfat
 target: dumpexfat
 
 cmds:
-  - cmd: /repo/dump/dumpexfat @@
+  - cmd: /install/sbin/dumpexfat @@
