@@ -1,0 +1,6 @@
+project: exfat
+target: exfat-debug
+
+cmds:
+  - cmd: /fuzz_exfat_debug
+    libfuzzer: true
