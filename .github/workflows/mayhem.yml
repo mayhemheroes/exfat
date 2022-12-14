@@ -59,7 +59,8 @@ jobs:
       fail-fast: false
       matrix:
         mayhemfile:
-          - mayhem/Mayhemfile
+          - mayhem/Mayhemfile_exfat_debug
+          - mayhem/Mayhemfile_dumpexfat
 
     steps:
       - uses: actions/checkout@v3
