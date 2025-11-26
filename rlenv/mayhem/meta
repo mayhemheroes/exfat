@@ -1,0 +1,12 @@
+{
+  "workspace": "mayhemheroes",
+  "project": "exfat",
+  "target": "exfat-debug",
+  "run_id": "5",
+  "ci_url": "https://github.com:443/mayhemheroes/exfat//actions/runs/4640305610",
+  "run_image_name": "ghcr.io/mayhemheroes/exfat:master",
+  "run_image_with_digest": "ghcr.io/mayhemheroes/exfat@sha256:d29e9f9a2e3a52c27fc030a44dab72f4462908e794a3cf1c93b1d5753087f00e",
+  "git_repo_url": "git@github.com:mayhemheroes/exfat.git",
+  "git_revision": "dbdce42081dbc5f94a9c0b75d01a5b2841a5a081",
+  "target_executable": "/fuzz_exfat_debug"
+}

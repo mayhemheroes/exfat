@@ -1,0 +1,11 @@
+project: mayhemheroes/exfat
+target: exfat-debug
+
+cmds:
+  - cmd: /fuzz_exfat_debug
+    libfuzzer: true
+    env: {}
+image: ghcr.io/mayhemheroes/exfat@sha256:d29e9f9a2e3a52c27fc030a44dab72f4462908e794a3cf1c93b1d5753087f00e
+duration: 300
+testsuite:
+  - https://app.mayhem.security/mayhemheroes/exfat/exfat-debug/testsuite.tar

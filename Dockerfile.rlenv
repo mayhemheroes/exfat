@@ -1,0 +1,106 @@
+# ============================================================================
+# RLENV Patch Playground - Single-Stage Build
+# ============================================================================
+# Original image: ghcr.io/mayhemheroes/exfat:master
+# Target: exfat-debug
+# Git revision: dbdce42081dbc5f94a9c0b75d01a5b2841a5a081
+
+# ============================================================================
+# 1. Base Image Selection
+# ============================================================================
+FROM --platform=linux/amd64 ubuntu:20.04
+
+# ============================================================================
+# 2. System Dependencies (merged from all stages)
+# ============================================================================
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    automake \
+    pkg-config \
+    libtool \
+    build-essential \
+    libfuse-dev \
+    clang \
+    jq \
+    && rm -rf /var/lib/apt/lists/*
+
+# ============================================================================
+# 3. Copy MTV Binary (REQUIRED for validation)
+# ============================================================================
+COPY --from="us-east4-docker.pkg.dev/forallsecure-1/rlenv-staging/rlenv-mcp-static:latest" \
+     /rlenv/bin/mtv /rlenv/bin/mtv
+
+# ============================================================================
+# 4. Language-Specific Setup
+# ============================================================================
+ENV FUZZING_LANGUAGE=c
+
+# ============================================================================
+# 5. Copy Source Code (EARLY - source exists now)
+# ============================================================================
+COPY . /rlenv/source/exfat/
+
+# ============================================================================
+# 6. Make Source World-Writable (REQUIRED for non-root rebuilds)
+# ============================================================================
+RUN chmod -R 777 /rlenv/source
+
+# ============================================================================
+# 7. Set Working Directory
+# ============================================================================
+WORKDIR /rlenv/source/exfat/
+
+# ============================================================================
+# 8. Install Language Dependencies
+# ============================================================================
+# No additional language dependencies required for this C project
+
+# ============================================================================
+# 9. Build Application
+# ============================================================================
+RUN autoreconf -if
+RUN ./configure --prefix=/install
+RUN make -j8
+RUN make install
+RUN clang++ /rlenv/source/exfat/mayhem/fuzz_exfat_debug.cpp \
+    -fsanitize=fuzzer,address \
+    /rlenv/source/exfat/libexfat/libexfat.a \
+    -o /fuzz_exfat_debug
+
+# ============================================================================
+# 10. Copy Artifacts to Expected Locations
+# ============================================================================
+# Artifacts are already built to expected locations:
+# - /install (from make install)
+# - /fuzz_exfat_debug (from clang++ compilation)
+
+# ============================================================================
+# 11. Permission Management (REQUIRED)
+# ============================================================================
+# Target executable (rwxrwxrwx - needs to be writable by UID 1000 for rebuilds)
+RUN chmod 777 /fuzz_exfat_debug
+
+# Build output directory
+RUN chmod -R 777 /install 2>/dev/null || true
+
+# Root cache (if needed)
+RUN chmod -R 777 /root/.cache 2>/dev/null || true
+
+# ============================================================================
+# 12. Copy rlenv Directory (MUST BE NEAR END - doesn't exist yet!)
+# ============================================================================
+COPY rlenv /rlenv
+
+# ============================================================================
+# 13. Final Permission Fix (REQUIRED)
+# ============================================================================
+RUN chmod -R 777 /rlenv/source
+
+# ============================================================================
+# 14. Set Entry Point
+# ============================================================================
+CMD ["/fuzz_exfat_debug"]
+
+# ============================================================================
+# 15. Reset Working Directory
+# ============================================================================
+WORKDIR /

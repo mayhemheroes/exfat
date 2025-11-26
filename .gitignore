@@ -27,3 +27,4 @@ Makefile
 /label/exfatlabel
 /libexfat/libexfat.a
 /mkfs/mkexfatfs
+rlenv/mayhem/data/testsuite
