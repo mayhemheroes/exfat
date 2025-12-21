@@ -50,7 +50,7 @@ task:
 
     - name: freebsd
       freebsd_instance:
-        image_family: freebsd-14-2
+        image_family: freebsd-15-0-amd64-ufs
       install_script: |
         pkg install -y autoconf automake fusefs-libs libublio pkgconf
 
